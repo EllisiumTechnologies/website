@@ -8,6 +8,7 @@ import useLenisSmoothScroll from './hooks/useLenisSmoothScroll'
 import LoadingAnimation from './components/Common/LoadingAnimation'
 import Navbar from './components/Common/Navbar'
 import GrainOverlay from './components/Common/GrainOverlay'
+import Footer from './components/Common/Footer'
 import Work from './pages/Work'
 
 const App = () => {
@@ -57,7 +58,7 @@ const App = () => {
       {isLoading && <LoadingAnimation onComplete={handleLoadingComplete} />}
       {!isLoading && <ElasticCursor />}
       <Navbar />
-      <GrainOverlay />
+      {/* <GrainOverlay /> */}
 
       <Routes location={displayLocation}>
         <Route path='/' element={<Home isReady={!isLoading} />} />
@@ -65,6 +66,7 @@ const App = () => {
         <Route path='/work' element={<Work />} />
         <Route path='/contact' element={<Contact />} />
       </Routes>
+      <Footer />
     </div>
   )
 }

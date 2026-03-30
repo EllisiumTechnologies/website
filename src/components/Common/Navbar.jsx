@@ -52,32 +52,32 @@ const Navbar = () => {
   )
 
   return (
-    <header className='fixed inset-x-0 top-0 z-50 border-y border-black/20 bg-transparent'>
+    <header className='fixed inset-x-0 top-0 z-50 border-y  font-black border-black/20 bg-[#cdbf9f]'>
       <div className='mx-auto max-w-480'>
         <div className='hidden h-17 grid-cols-[.20fr_2fr_1.3fr] md:grid'>
           <div className='flex items-center border-r border-black/30 px-10'>
             <NavLink
               to='/'
-              className='blend-invert-text inline-flex items-center gap-3'
+              className=' inline-flex items-center gap-3'
               aria-label='Go to home page'
             >
-              <span className='font-["Germania_One"] text-3xl leading-none'>ET</span>
+              <span className='font-["Germania_One"] text-3xl font-medium leading-none'>ET</span>
             </NavLink>
           </div>
 
-          <div className='blend-invert-text flex items-center border-r border-black/50 px-8'>
-            <p className='max-w-[28ch] text-xs font-small leading-snug'>
+          <div className=' flex items-center border-r border-black/50 px-8'>
+            <p className='max-w-[28ch] text-xs font-small font-extralight leading-snug'>
               A studio crafting captivating
               <br />
               digital experiences.
             </p>
           </div>
 
-          <nav className='grid grid-cols-3' aria-label='Primary navigation'>
+          <nav className='grid grid-cols-3'  aria-label='Primary navigation'>
             {NAV_ITEMS.map((item, index) => (
               <motion.div
                 key={item.label}
-                className={`border-r border-black/50 px-8 pt-2 transition-colors duration-200 ${
+                className={`border-r border-black/50 font-light px-8 pt-2 transition-colors duration-200 ${
                   index === NAV_ITEMS.length - 1 ? 'border-r-0' : ''
                 }`}
                 onHoverStart={() => setHoveredItem(item.label)}
@@ -90,7 +90,7 @@ const Navbar = () => {
                 <NavLink
                   to={item.to}
                   className={({ isActive }) =>
-                    `blend-invert-text flex flex-col justify-center gap-0.5 ${
+                    ` flex flex-col justify-center  gap-0.5 ${
                       isActive ? '' : ''
                     }`
                   }
@@ -148,12 +148,12 @@ const Navbar = () => {
           <NavLink
             to='/'
             aria-label='Go to home page'
-            className='blend-invert-text font-["Germania_One"] text-3xl leading-none'
+            className=' font-["Germania_One"] text-3xl leading-none'
           >
             ET
           </NavLink>
 
-          <nav className='blend-invert-text flex items-center gap-4 text-xs font-medium' aria-label='Mobile navigation'>
+          <nav className=' flex items-center gap-4 text-xs font-medium' aria-label='Mobile navigation'>
             {NAV_ITEMS.map((item) => (
               <NavLink key={item.label} to={item.to} className={({ isActive }) => (isActive ? 'opacity-100' : 'opacity-85')}>
                 {item.label}

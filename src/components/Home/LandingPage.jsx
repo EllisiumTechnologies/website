@@ -253,7 +253,7 @@ const LandingPage = ({ isReady }) => {
         className="relative flex h-full"
         style={{ width: `${PANEL_COUNT * 100}vw` }}
       >
-        <article className="relative h-screen w-screen shrink-0 bg-linear-to-br from-[#d8ccb4] to-[#cdbf9f] pl-10 ">
+        <article className="relative h-screen w-screen shrink-0 bg-[#CDBF9F] pl-10 ">
           <div className="grid h-full grid-cols-1 gap-6 md:grid-cols-[1.2fr_0.9fr] md:gap-0">
             <MotionDiv
               className="grid h-full min-h-0 grid-rows-[auto_auto_auto] content-between gap-6 mt-20 md:pr-10"
@@ -320,7 +320,7 @@ const LandingPage = ({ isReady }) => {
           </div>
         </article>
 
-        <article className="relative h-screen w-screen shrink-0 overflow-hidden bg-[#C0B6A9] pl-8 pt-8  text-[#2f3138] md:pl-14 md:pt-17 ">
+        <article className="relative h-screen w-screen shrink-0 overflow-hidden bg-[#CDBF9F] pl-8 pt-8  text-[#2f3138] md:pl-14 md:pt-17 ">
           {/* Subtle animated grain texture overlay */}
           <MotionDiv
             initial={{ opacity: 0 }}
@@ -552,7 +552,7 @@ const LandingPage = ({ isReady }) => {
           </div>
         </article>
 
-        <article className="flex h-screen w-screen shrink-0 bg-[#C0B6A9] text-[#222224]">
+        <article className="flex h-screen w-screen shrink-0 bg-[#cdbf9f] text-[#222224]">
           {SERVICES.map((item, i) => (
             <ServicePanel key={item.num} item={item} index={i} isReady={isReady} />
           ))}

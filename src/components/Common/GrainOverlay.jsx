@@ -4,11 +4,11 @@ const GrainOverlay = () => {
   return (
     <div
       aria-hidden='true'
-      className='pointer-events-none fixed inset-0 z-9999'
+      className='grain-marquee pointer-events-none fixed inset-0 z-9999'
       style={{
         backgroundImage: `url(${grainTexture})`,
         backgroundRepeat: 'repeat',
-        backgroundSize: '130px 130px',
+        backgroundSize: '100px 100px',
         opacity: 1,
       }}
     />
