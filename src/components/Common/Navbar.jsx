@@ -52,7 +52,7 @@ const Navbar = () => {
   )
 
   return (
-    <header className='fixed inset-x-0 top-0 z-50 border-y  font-black border-black/20 bg-[#cdbf9f]'>
+    <header className='fixed inset-x-0 top-0 z-50 border-y  font-black border-black/20 bg-transparent'>
       <div className='mx-auto max-w-480'>
         <div className='hidden h-17 grid-cols-[.20fr_2fr_1.3fr] md:grid'>
           <div className='flex items-center border-r border-black/30 px-10'>

@@ -10,46 +10,46 @@ gsap.registerPlugin(ScrollTrigger)
 
 const PROJECTS = [
   {
-  id: '01',
-  title: 'Discovery & Strategy',
-  leftLabel: 'OUR',
-  rightLabel: 'PROCESS',
-  description:
-    'We begin by understanding your vision, business goals, and user needs to craft a clear strategy that builds a strong foundation for your digital product.',
-  coverImage: image1,
-  cardImage: image2,
-},
-{
-  id: '02',
-  title: 'Creative Direction',
-  leftLabel: 'DESIGN',
-  rightLabel: 'SYSTEM',
-  description:
-    'We create a powerful visual identity and design system that reflects your brand while ensuring consistency, scalability, and a premium user experience.',
-  coverImage: image2,
-  cardImage: image3,
-},
-{
-  id: '03',
-  title: 'UI/UX & Prototyping',
-  leftLabel: 'SMART',
-  rightLabel: 'UX',
-  description:
-    'From wireframes to high-fidelity prototypes, we design seamless user journeys that are intuitive, engaging, and conversion-focused.',
-  coverImage: image3,
-  cardImage: image4,
-},
-{
-  id: '04',
-  title: 'Development & Launch',
-  leftLabel: 'BUILD',
-  rightLabel: 'DEPLOY',
-  description:
-    'We develop fast, scalable, and high-performance applications, ensuring a smooth launch with attention to detail, security, and long-term growth.',
-  coverImage: image4,
-  cardImage: image1,
-},
-]
+    id: '01',
+    title: 'Discovery & Strategy',
+    leftLabel: 'OUR',
+    rightLabel: 'PROCESS',
+    description:
+      'We start by actually understanding what you want, what your users need, and where this is going. No guesswork, just a clear plan that sets everything up properly.',
+    coverImage: image1,
+    cardImage: image2,
+  },
+  {
+    id: '02',
+    title: 'Creative Direction',
+    leftLabel: 'DESIGN',
+    rightLabel: 'SYSTEM',
+    description:
+      'We build a visual identity that feels right for your brand and stays consistent everywhere. It is not just about looks, it is about creating something solid and scalable.',
+    coverImage: image2,
+    cardImage: image3,
+  },
+  {
+    id: '03',
+    title: 'UI/UX & Prototyping',
+    leftLabel: 'SMART',
+    rightLabel: 'UX',
+    description:
+      'We map out user flows that actually make sense. From rough ideas to polished prototypes, everything is designed to feel smooth and easy to use.',
+    coverImage: image3,
+    cardImage: image4,
+  },
+  {
+    id: '04',
+    title: 'Development & Launch',
+    leftLabel: 'BUILD',
+    rightLabel: 'DEPLOY',
+    description:
+      'We turn designs into fast, reliable products. Clean code, solid performance, and a launch that does not fall apart under pressure.',
+    coverImage: image4,
+    cardImage: image1,
+  },
+];
 
 const AboutLanding = () => {
   const sectionRef = useRef(null)
@@ -94,7 +94,7 @@ const AboutLanding = () => {
   }, [])
 
   return (
-    <section ref={sectionRef} className='relative h-screen overflow-hidden bg-[#d6cdc0] pt-16'>
+    <section ref={sectionRef} className='relative h-screen overflow-hidden bg-[#ffffff] pt-16'>
       {PROJECTS.map((project, index) => (
         <article
           key={project.id}
@@ -110,7 +110,7 @@ const AboutLanding = () => {
             <div className='absolute inset-0 bg-black/18' />
           </div>
 
-          <div className='relative flex h-full flex-col bg-[#d8d0c3] px-6 pb-10 pt-8 text-[#1f1f1f] md:px-12 md:pt-18'>
+          <div className='relative flex h-full flex-col bg-[#ffffff] px-6 pb-10 pt-8 text-[#1f1f1f] md:px-12 md:pt-18'>
             <div className='flex items-start justify-between'>
               <h2 className='font-serif text-3xl  leading-none tracking-[-0.03em] md:text-5xl'>
                 {project.title}
@@ -124,7 +124,7 @@ const AboutLanding = () => {
                 <span>{project.rightLabel}</span>
               </div>
 
-              <div className='w-50 border border-[#c4baac] bg-[#e2d9cc] p-2 shadow-[0_0_0_4px_rgba(236,229,217,0.75)] md:w-50'>
+              <div className='w-50 border border-[#c4baac] bg-[#ffffff] p-2 shadow-[0_0_0_4px_rgba(236,229,217,0.75)] md:w-50'>
                 <img
                   src={project.cardImage}
                   alt={`${project.title} detail`}
