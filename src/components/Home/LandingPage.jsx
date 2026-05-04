@@ -16,7 +16,7 @@ const MotionDiv = motion.div;
 const MotionH1 = motion.h1;
 const MotionImg = motion.img;
 const MotionP = motion.p;
-const HOVER_TEXT_COLOR = "#d8c9b6";
+const HOVER_TEXT_COLOR = "#1a1a1a";
 const HEADING_LINES = ["Innovation-driven", "digital studio", "tech agency"];
 const SERVICES = [
   {
@@ -148,8 +148,6 @@ function ServicePanel({ item, index, isReady }) {
         >
           {item.num}
         </motion.p>
-
-        {/* <div className="flex-1" /> */}
 
         <div className="mb-10 mt-6">
           {item.title.map((line, i) => (
@@ -382,7 +380,7 @@ const LandingPage = ({ isReady }) => {
                   variants={panelItemVariants}
                   className="max-w-xl text-[1.2rem] font-light leading-[1.7] text-[#1a1919]"
                 >
-                 Ellisium Technology’s work is driven by innovation and precision, delivering high-performance digital experiences through modern development, user-focused design, and scalable solutions that reflect our commitment to excellence and impactful storytelling.
+                 Ellisium Technology's work is driven by innovation and precision, delivering high-performance digital experiences through modern development, user-focused design, and scalable solutions that reflect our commitment to excellence and impactful storytelling.
                 </MotionP>
 
                 {/* CTA links */}
@@ -504,7 +502,7 @@ const LandingPage = ({ isReady }) => {
                 ))}
               </h2>
 
-             
+              
 
               {/* Service description */}
               <motion.p
@@ -546,7 +544,7 @@ const LandingPage = ({ isReady }) => {
 
               </div>
 
-             
+              
               
             </MotionDiv>
           </div>
