@@ -1,0 +1,35 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: "Germania One";
+  src: url("/GermaniaOne-Regular.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+html,
+body {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+p {
+  font-family: "Passion", cursive;
+}
+
+.blend-invert-text {
+  color: #862e2e;
+  mix-blend-mode: difference;
+  -webkit-text-fill-color: #191919;
+  -webkit-font-smoothing: antialiased;
+}
+
+
