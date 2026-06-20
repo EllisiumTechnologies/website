@@ -197,7 +197,7 @@ export default function ProjectShowcase() {
       <div
         ref={pinRef}
         className='relative flex h-screen w-full items-center justify-center overflow-hidden'
-        style={{ background: '#0d0d0d' }}
+        style={{ }}
       >
 
         {/* ── Project image slides ── */}
