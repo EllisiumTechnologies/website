@@ -8,7 +8,7 @@ const GrainOverlay = () => {
       style={{
         backgroundImage: `url(${grainTexture})`,
         backgroundRepeat: 'repeat',
-        backgroundSize: '100px 100px',
+        backgroundSize: '60px 60px',
         opacity: 1,
       }}
     />

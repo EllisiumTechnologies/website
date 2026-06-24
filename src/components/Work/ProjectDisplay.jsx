@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useRef, useState, useEffect, useMemo } from 'react'
 import { useGSAP } from '@gsap/react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -13,102 +13,133 @@ gsap.registerPlugin(ScrollTrigger)
 const PROJECTS = [
   {
     id: '01',
-    title: 'One Earth Properties',
-    tag: 'React',
     name: 'One Earth Properties',
     category: 'React',
+    description:
+      'A full real-estate platform built in React — listing search, scheduling, and tours, wrapped in motion that makes browsing feel alive.',
     tags: ['UI/UX', 'Animations', 'Development'],
     link: '#',
     image: project1,
+    accent: '#ff5b3c',
+    dark: false,
   },
   {
     id: '02',
-    title: 'ET',
-    tag: 'UI/UX & Development',
     name: 'ET',
     category: 'UI/UX & Development',
+    description:
+      'A character render study — skin shading, subsurface texture work, and lighting, set inside a quiet, moody interface shell.',
     tags: ['Rendering', 'Textures', 'UI/UX'],
     link: '#',
     image: project2,
+    accent: '#7c9fff',
+    dark: false,
   },
   {
     id: '03',
-    title: 'Learnkins',
-    tag: 'Learning Platform',
     name: 'Learnkins',
     category: 'Learning Platform',
+    description:
+      'An interactive learning platform for kids — built on React and GSAP so every lesson has a little motion to keep it moving.',
     tags: ['React', 'Motion', 'gsap'],
     link: '#',
     image: project3,
+    accent: '#ffd23c',
+    dark: false,
   },
   {
     id: '04',
-    title: '3D Wolf',
-    tag: 'Three.js & WebGL',
     name: '3D Wolf',
     category: 'Three.js & WebGL',
+    description:
+      'A real-time WebGL wolf for the browser — fur shading and dynamic lighting, framed inside a Webflow front end.',
     tags: ['Webflow', 'UI/UX', 'Animation'],
     link: '#',
     image: project4,
+    accent: '#3cffb0',
+    dark: true,
   },
 ]
 
+const SCRAMBLE_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ•/_×'
+
+function scrambleText(el, finalText, duration = 0.7) {
+  if (!el) return
+  const len = finalText.length
+  const start = performance.now()
+  const tick = (now) => {
+    const t = Math.min(1, (now - start) / (duration * 1000))
+    let out = ''
+    for (let i = 0; i < len; i++) {
+      const ch = finalText[i]
+      if (ch === ' ' || ch === '&') out += ch
+      else if (t * len * 1.4 > i) out += ch
+      else out += SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)]
+    }
+    el.textContent = out
+    if (t < 1) requestAnimationFrame(tick)
+    else el.textContent = finalText
+  }
+  requestAnimationFrame(tick)
+}
+
 export default function ProjectShowcase() {
-  const sectionRef    = useRef(null)
-  const pinRef        = useRef(null)
-  const circleRef     = useRef(null)
-  const circleBorderRef = useRef(null)
-  const slideRefs     = useRef([])
-  const nameRef       = useRef(null)
-  const counterRef    = useRef(null)
-  const categoryRef   = useRef(null)
-  const tagRefs       = useRef([])
-  const lastIndexRef  = useRef(0)
+  const sectionRef     = useRef(null)
+  const pinRef          = useRef(null)
+  const imagePanelRef   = useRef(null)
+  const slideRefs       = useRef([])
+  const blobRefs        = useRef([])
+  const miniRingRef     = useRef(null)
+  const ghostNumRef     = useRef(null)
+  const nameRef         = useRef(null)
+  const categoryRef     = useRef(null)
+  const descRef         = useRef(null)
+  const tagRefs         = useRef([])
+  const railFillRef     = useRef(null)
+  const thumbRefs       = useRef([])
+  const lastIndexRef    = useRef(0)
+  const firstRunRef     = useRef(true)
+  const stRef           = useRef(null)
+
   const [activeIndex, setActiveIndex] = useState(0)
+  const reduceMotion = useMemo(
+    () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+    []
+  )
 
-  // ── Circle mouse parallax ────────────────────────────────────────────────
-  useEffect(() => {
-    const pin = pinRef.current
-    if (!pin) return
+  const proj  = PROJECTS[activeIndex]
+  const chars = useMemo(() => Array.from(proj.name), [proj.name])
 
-    let cx = 0, cy = 0, tx = 0, ty = 0, raf
-
-    const loop = () => {
-      cx += (tx - cx) * 0.07
-      cy += (ty - cy) * 0.07
-      gsap.set(circleRef.current, { x: cx, y: cy })
-      raf = requestAnimationFrame(loop)
-    }
-
-    const onMove = (e) => {
-      const { left, top, width, height } = pin.getBoundingClientRect()
-      tx = (e.clientX - left - width  / 2) * 0.04
-      ty = (e.clientY - top  - height / 2) * 0.04
-    }
-
-    pin.addEventListener('mousemove', onMove)
-    raf = requestAnimationFrame(loop)
-    return () => {
-      pin.removeEventListener('mousemove', onMove)
-      cancelAnimationFrame(raf)
-    }
-  }, [])
-
-  // ── Main scroll sequence ─────────────────────────────────────────────────
+  // ───────────────────────── Master scroll-driven sequence ─────────────────────────
   useGSAP(() => {
     const total = PROJECTS.length
     const transitions = total - 1
-    const ringCircumference = 2 * Math.PI * 165
+    const ringR = 26
+    const ringCircumference = 2 * Math.PI * ringR
+    const SKEW = 12
 
-    // Stack all slides — first one visible, rest below
-    gsap.set(slideRefs.current, { yPercent: (i) => i === 0 ? 0 : 100 })
-    if (circleBorderRef.current) {
-      circleBorderRef.current.style.strokeDasharray = `${ringCircumference}`
-      circleBorderRef.current.style.strokeDashoffset = `${ringCircumference}`
+    gsap.set(slideRefs.current, (i) => i === 0
+      ? { clipPath: 'polygon(0% 0%,100% 0%,100% 100%,0% 100%)' }
+      : { clipPath: `polygon(0% 100%, 100% ${100 - SKEW}%, 100% 100%, 0% 100%)`, scale: 1.12 })
+
+    if (miniRingRef.current) {
+      miniRingRef.current.style.strokeDasharray = `${ringCircumference}`
+      miniRingRef.current.style.strokeDashoffset = `${ringCircumference}`
     }
 
-    // Pin and drive all transitions from one continuous progress value.
-    ScrollTrigger.create({
+    blobRefs.current.forEach((b, i) => {
+      if (!b || reduceMotion) return
+      gsap.to(b, {
+        x: () => gsap.utils.random(-40, 40),
+        y: () => gsap.utils.random(-30, 30),
+        duration: 7 + i * 2.4,
+        repeat: -1,
+        yoyo: true,
+        ease: 'sine.inOut',
+      })
+    })
+
+    stRef.current = ScrollTrigger.create({
       trigger: sectionRef.current,
       start: 'top top',
       end: () => `+=${transitions * window.innerHeight}`,
@@ -120,309 +151,272 @@ export default function ProjectShowcase() {
         const p = self.progress
         const raw = p * transitions
 
-        slideRefs.current.forEach((slide, i) => {
-          if (!slide || i === 0) return
-          const y = gsap.utils.clamp(0, 100, (i - raw) * 100)
-          gsap.set(slide, { yPercent: y })
-        })
+        for (let i = 1; i < total; i++) {
+          const slide = slideRefs.current[i]
+          if (!slide) continue
+          const local = gsap.utils.clamp(0, 1, i - raw)
+          const topY = local * 100
+          const p2 = gsap.utils.clamp(0, 100, topY - SKEW)
 
-        if (circleBorderRef.current) {
-          circleBorderRef.current.style.strokeDashoffset = `${ringCircumference * (1 - p)}`
+          if (reduceMotion) {
+            gsap.set(slide, { autoAlpha: 1 - local, clipPath: 'polygon(0% 0%,100% 0%,100% 100%,0% 100%)' })
+          } else {
+            gsap.set(slide, {
+              clipPath: `polygon(0% ${topY}%, 100% ${p2}%, 100% 100%, 0% 100%)`,
+              scale: 1 + local * 0.18,
+              rotateZ: (i % 2 === 0 ? 1 : -1) * local * 3,
+              filter: `blur(${local * 14}px) brightness(${1 - local * 0.25})`,
+            })
+          }
+        }
+
+        if (miniRingRef.current) {
+          miniRingRef.current.style.strokeDashoffset = `${ringCircumference * (1 - p)}`
+        }
+        if (railFillRef.current) {
+          railFillRef.current.style.height = `${p * 100}%`
         }
 
         const nextIndex = Math.min(total - 1, Math.floor(raw + 0.5))
         if (nextIndex !== lastIndexRef.current) {
           lastIndexRef.current = nextIndex
           setActiveIndex(nextIndex)
-          animateText(nextIndex)
         }
       },
     })
+  }, { dependencies: [reduceMotion] })
 
-    // Initial text entrance
-    animateText(0, true)
-
-  }, { dependencies: [] })
-
-  const animateText = (i, initial = false) => {
-    const dur = initial ? 0.9 : 0.55
+  // ───────────────────────── Per-project reveal ─────────────────────────
+  useEffect(() => {
+    const dur = firstRunRef.current ? 0.9 : 0.6
     const ease = 'power4.out'
 
-    gsap.fromTo(nameRef.current,
-      { yPercent: initial ? 40 : 60, autoAlpha: 0 },
-      { yPercent: 0, autoAlpha: 1, duration: dur, ease },
+    const charEls = nameRef.current ? nameRef.current.querySelectorAll('.char') : []
+    gsap.fromTo(charEls,
+      { yPercent: 120, rotateX: -90, autoAlpha: 0 },
+      { yPercent: 0, rotateX: 0, autoAlpha: 1, duration: dur, ease, stagger: 0.018 },
     )
-    gsap.fromTo(categoryRef.current,
-      { yPercent: initial ? 30 : 40, autoAlpha: 0 },
-      { yPercent: 0, autoAlpha: 1, duration: dur * 0.85, ease, delay: 0.07 },
+
+    if (categoryRef.current) scrambleText(categoryRef.current, proj.category, 0.7)
+
+    gsap.fromTo(descRef.current,
+      { autoAlpha: 0, y: 16 },
+      { autoAlpha: 1, y: 0, duration: dur * 0.85, ease, delay: 0.1 },
     )
-    gsap.fromTo(counterRef.current,
-      { autoAlpha: 0, x: -8 },
-      { autoAlpha: 1, x: 0, duration: dur * 0.7, ease, delay: 0.04 },
-    )
+
     if (tagRefs.current.length) {
       gsap.fromTo(tagRefs.current,
-        { autoAlpha: 0, y: 10 },
-        { autoAlpha: 1, y: 0, duration: 0.4, ease, stagger: 0.06, delay: 0.12 },
+        { autoAlpha: 0, y: 12, skewY: 4 },
+        { autoAlpha: 1, y: 0, skewY: 0, duration: 0.45, ease, stagger: 0.07, delay: 0.2 },
       )
     }
-  }
+
+    gsap.fromTo(ghostNumRef.current,
+      { autoAlpha: 0, scale: 0.9 },
+      { autoAlpha: 1, scale: 1, duration: 0.7, ease: 'power3.out' },
+    )
+
+    gsap.to(thumbRefs.current, {
+      scale: (i) => (i === activeIndex ? 1.08 : 1),
+      filter: (i) => (i === activeIndex ? 'grayscale(0)' : 'grayscale(0.7) brightness(0.6)'),
+      borderColor: (i) => (i === activeIndex ? proj.accent : 'rgba(255,255,255,0.15)'),
+      duration: 0.5,
+      ease: 'power3.out',
+    })
+
+    if (!reduceMotion) {
+      gsap.to(blobRefs.current, { backgroundColor: proj.accent, duration: 1, ease: 'sine.inOut' })
+    }
+    gsap.to(miniRingRef.current, { stroke: proj.accent, duration: 0.5 })
+
+    firstRunRef.current = false
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeIndex])
 
   const handleProjectClick = () => {
-    const link = PROJECTS[activeIndex]?.link
+    const link = proj?.link
     if (!link || link === '#') return
-
-    if (/^https?:\/\//i.test(link)) {
-      window.open(link, '_blank', 'noopener,noreferrer')
-      return
-    }
-
-    window.location.href = link
+    if (/^https?:\/\//i.test(link)) window.open(link, '_blank', 'noopener,noreferrer')
+    else window.location.href = link
   }
 
-  const proj = PROJECTS[activeIndex]
-  const isFourthProject = activeIndex === 3
-  const primaryTextColor = isFourthProject ? '#ffffff' : '#000000'
-  const softTextColor = isFourthProject ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.55)'
-  const subtleTextColor = isFourthProject ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.45)'
-  const ringBaseColor = isFourthProject ? 'rgba(255,255,255,0.22)' : 'rgba(0,0,0,0.25)'
-  const ringActiveColor = isFourthProject ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.9)'
-  const tickColor = isFourthProject ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)'
+  const handleThumbClick = (i) => {
+    const st = stRef.current
+    if (!st) return
+    const target = st.start + (st.end - st.start) * (i / (PROJECTS.length - 1))
+    window.scrollTo({ top: target, behavior: 'smooth' })
+  }
+
+  const panelTextColor = '#111111'
+  const panelSoftColor = 'rgba(17,17,17,0.55)'
 
   return (
-    <section
-      ref={sectionRef}
-      style={{ height: `${PROJECTS.length * 100}vh`, background: '#0d0d0d' }}
-    >
-      <div
-        ref={pinRef}
-        className='relative flex h-screen w-full items-center justify-center overflow-hidden'
-        style={{ }}
-      >
+    <section ref={sectionRef} id="work" style={{ height: `${PROJECTS.length * 100}vh`, background: '#ffffff' }}>
+      <div ref={pinRef} className="relative flex h-screen w-full flex-col md:flex-row overflow-hidden">
 
-        {/* ── Project image slides ── */}
-        {PROJECTS.map((p, i) => (
-          <div
-            key={p.id}
-            ref={(el) => { if (el) slideRefs.current[i] = el }}
-            className='absolute inset-0'
-            style={{ zIndex: i + 1 }}
-          >
-            <img
-              src={p.image}
-              alt={p.name}
-              className='h-full w-full object-cover'
-              style={{ filter: 'brightness(1)' }}
-            />
-          </div>
-        ))}
-
-        {/* ── Noise grain overlay ── */}
-        <div
-          className='pointer-events-none absolute inset-0'
-          style={{
-            zIndex: 20,
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
-            backgroundSize: '180px',
-            opacity: 0,
-          }}
-        />
-
-        {/* ── Center circle ── */}
-        <div
-          ref={circleRef}
-          className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2'
-          style={{ zIndex: 30, width: 340, height: 340 }}
-        >
-          {/* SVG ring — border grows on scroll */}
-          <svg
-            viewBox='0 0 340 340'
-            className='absolute inset-0 h-full w-full -rotate-90'
-            style={{ overflow: 'visible' }}
-          >
-            {/* Static dim ring */}
-            <circle
-              cx='170' cy='170' r='165'
-              fill='none'
-              stroke={ringBaseColor}
-              strokeWidth='1'
-            />
-            {/* Animated progress ring */}
-            <circle
-              ref={circleBorderRef}
-              cx='170' cy='170' r='165'
-              fill='none'
-              stroke={ringActiveColor}
-              strokeWidth='1'
-              strokeDasharray='314 1036'
-              strokeDashoffset='314'
-              strokeLinecap='round'
-              style={{ transition: 'stroke-dashoffset 0.05s linear' }}
-            />
-          </svg>
-
-          {/* Circle image mask */}
-          <div
-            className='absolute inset-[18px] overflow-hidden rounded-full'
-            style={{ 
-              boxShadow: '0 0 60px rgba(0,0,0,0.7) inset',
-              border: `1px solid ${ringActiveColor}`
-            }}
-          >
-            {PROJECTS.map((p, i) => (
+        {/* ───────── Left half — image ───────── */}
+        <div ref={imagePanelRef} className="relative h-1/2 w-full md:h-full md:w-1/2 overflow-hidden">
+          {PROJECTS.map((p, i) => (
+            <div
+              key={p.id}
+              ref={(el) => { if (el) slideRefs.current[i] = el }}
+              className="absolute inset-0"
+              style={{ zIndex: i + 1, willChange: 'clip-path, transform, filter' }}
+            >
               <img
-                key={p.id}
                 src={p.image}
                 alt={p.name}
-                className='absolute inset-0 h-full w-full object-cover transition-opacity duration-700'
-                style={{
-                  opacity: i === activeIndex ? 1 : 0,
-                  filter: 'brightness(1)',
-                  transitionTimingFunction: 'cubic-bezier(0.16,1,0.3,1)',
-                }}
+                className="h-full w-full object-cover"
+                style={{ animation: 'kenburns 9s ease-in-out infinite alternate' }}
               />
-            ))}
-          </div>
-
-          {/* Scroll label bottom */}
-          <p
-            className='absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap text-[11px] tracking-[0.2em] uppercase'
-            style={{ fontFamily: 'DM Sans, sans-serif', color: softTextColor }}
-          >
-            Scroll
-          </p>
-
-          {/* Counter left */}
-          <p
-            className='absolute left-[-4rem] top-1/2 -translate-y-1/2 text-[12px] tracking-[0.12em]'
-            style={{ fontFamily: 'DM Sans, sans-serif', color: primaryTextColor, fontSize: '14px' }}
-          >
-            / {String(activeIndex + 1).padStart(2, '0')}
-          </p>
-
-          {/* Counter right */}
-          <p
-            className='absolute right-[-4rem] top-1/2 -translate-y-1/2 text-[12px] tracking-[0.12em]'
-            style={{ fontFamily: 'DM Sans, sans-serif', color: primaryTextColor, fontSize: '14px' }}
-          >
-            / {String(PROJECTS.length).padStart(2, '0')}
-          </p>
-
-          {/* Tick marks at 90° points */}
-          {[0, 90, 180, 270].map((deg) => (
-            <div
-              key={deg}
-              className='absolute left-1/2 top-1/2 origin-center'
-              style={{
-                transform: `translate(-50%, -50%) rotate(${deg}deg) translateY(-170px)`,
-                width: 1,
-                height: 8,
-                background: tickColor,
-              }}
-            />
+            </div>
           ))}
+          <div
+            className="pointer-events-none absolute inset-0 opacity-[0.05]"
+            style={{
+              zIndex: 21,
+              backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+              backgroundSize: '180px',
+            }}
+          />
         </div>
 
-        {/* ── Project name — bottom left ── */}
+        {/* ───────── Divider — filmstrip navigator ───────── */}
         <div
-          className='absolute bottom-[12vh] left-[5vw] overflow-hidden'
-          style={{ zIndex: 30 }}
+          className="absolute z-40 hidden md:flex flex-col items-center"
+          style={{ left: '50%', top: '50%', transform: 'translate(-50%, -50%)', height: '60vh', width: 64 }}
         >
-          <h2
-            ref={nameRef}
-            className=''
+          <div className="relative w-px flex-1" style={{ background: 'rgba(0,0,0,0.15)' }}>
+            <div ref={railFillRef} className="absolute left-0 top-0 w-px" style={{ height: '0%', background: '#111' }} />
+          </div>
+          <div className="absolute top-0 flex h-full flex-col justify-between gap-2 py-1">
+            {PROJECTS.map((p, i) => (
+              <button
+                key={p.id}
+                type="button"
+                onClick={() => handleThumbClick(i)}
+                ref={(el) => { if (el) thumbRefs.current[i] = el }}
+                className="overflow-hidden rounded-md border-2 transition-shadow"
+                style={{ width: 56, height: 38, borderColor: 'rgba(0,0,0,0.15)', boxShadow: '0 4px 16px rgba(0,0,0,0.18)' }}
+              >
+                <img src={p.image} alt={p.name} className="h-full w-full object-cover" />
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* ───────── Right half — detail panel ───────── */}
+        <div className="relative flex h-1/2 w-full md:h-full md:w-1/2 flex-col justify-center px-[6vw] md:px-[5vw]" style={{ background: '#ffffff' }}>
+
+          {/* Top row — ring counter */}
+          <div className="relative z-10 mb-6 flex items-center gap-3">
+            <svg viewBox="0 0 64 64" width="40" height="40" className="-rotate-90">
+              <circle cx="32" cy="32" r="26" fill="none" stroke="rgba(0,0,0,0.15)" strokeWidth="1.5" />
+              <circle ref={miniRingRef} cx="32" cy="32" r="26" fill="none" stroke={proj.accent} strokeWidth="1.5" strokeLinecap="round" style={{ transition: 'stroke-dashoffset 0.05s linear, stroke 0.4s ease' }} />
+            </svg>
+            <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 12, letterSpacing: '0.18em', color: panelSoftColor, textTransform: 'uppercase' }}>
+              {String(activeIndex + 1).padStart(2, '0')} / {String(PROJECTS.length).padStart(2, '0')} &nbsp;·&nbsp; Featured Work
+            </p>
+          </div>
+
+          {/* Ghost index number behind the title */}
+          <span
+            ref={ghostNumRef}
+            className="pointer-events-none absolute select-none"
             style={{
+              top: '14%', left: '5vw',
               fontFamily: '"Germania One", serif',
-              fontSize: 'clamp(32px, 5vw, 72px)',
-              lineHeight: 0.9,
-              letterSpacing: '-0.02em',
-              color: primaryTextColor,
+              fontSize: 'clamp(140px, 22vw, 280px)',
+              lineHeight: 1,
+              color: 'transparent',
+              WebkitTextStroke: `1px ${proj.accent}40`,
+              zIndex: 0,
             }}
           >
-            {proj.name}
+            {String(activeIndex + 1).padStart(2, '0')}
+          </span>
+
+          {/* Name */}
+          <h2
+            ref={nameRef}
+            className="relative z-10"
+            style={{
+              display: 'flex', flexWrap: 'wrap',
+              fontFamily: '"Germania One", serif',
+              fontSize: 'clamp(36px, 5.5vw, 76px)',
+              lineHeight: 0.95, letterSpacing: '-0.02em',
+              color: panelTextColor, perspective: 400,
+            }}
+          >
+            {chars.map((c, i) => (
+              <span key={i} style={{ display: 'inline-block', overflow: 'hidden' }}>
+                <span className="char" style={{ display: 'inline-block', willChange: 'transform' }}>
+                  {c === ' ' ? '\u00A0' : c}
+                </span>
+              </span>
+            ))}
           </h2>
+
+          {/* Category */}
           <p
             ref={categoryRef}
-            className='mt-2'
-            style={{
-              fontFamily: 'DM Sans, sans-serif',
-              fontSize: '11px',
-              letterSpacing: '0.16em',
-              textTransform: 'uppercase',
-              color: softTextColor,
-            }}
+            className="relative z-10 mt-3"
+            style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 11, letterSpacing: '0.16em', textTransform: 'uppercase', color: proj.accent }}
           >
             {proj.category}
           </p>
-        </div>
 
-        {/* ── Counter / index — top left ── */}
-        <div
-          className='absolute left-[5vw] top-[8vh]'
-          style={{ zIndex: 30 }}
-        >
+          {/* Description */}
           <p
-            ref={counterRef}
-            style={{
-              fontFamily: 'DM Sans, sans-serif',
-              fontSize: '13px',
-              letterSpacing: '0.18em',
-              color: primaryTextColor,
-              textTransform: 'uppercase',
-            }}
+            ref={descRef}
+            className="relative z-10 mt-5 max-w-md"
+            style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 15, lineHeight: 1.6, color: panelSoftColor }}
           >
-            {String(activeIndex + 1).padStart(2, '0')} / {String(PROJECTS.length).padStart(2, '0')} &nbsp;·&nbsp; Featured Work
+            {proj.description}
           </p>
-        </div>
 
-        {/* ── Tags — top right ── */}
-        <div
-          className='absolute right-[5vw] top-[8vh] flex flex-col items-end gap-2'
-          style={{ zIndex: 30 }}
-        >
-          {proj.tags.map((tag, i) => (
-            <span
-              key={tag}
-              ref={(el) => { if (el) tagRefs.current[i] = el }}
-              style={{
-                fontFamily: 'DM Sans, sans-serif',
-                fontSize: '12px',
-                letterSpacing: '0.16em',
-                textTransform: 'uppercase',
-                color: primaryTextColor,
-              }}
-            >
-              {tag} 
+          {/* Tags */}
+          <div className="relative z-10 mt-6 flex flex-wrap gap-3">
+            {proj.tags.map((tag, i) => (
+              <span
+                key={tag}
+                ref={(el) => { if (el) tagRefs.current[i] = el }}
+                className="rounded-full border px-3 py-1"
+                style={{
+                  fontFamily: 'DM Sans, sans-serif', fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase',
+                  color: panelTextColor, borderColor: 'rgba(0,0,0,0.15)',
+                }}
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+
+          {/* Visit link */}
+          <button
+            type="button"
+            onClick={handleProjectClick}
+            className="group relative z-10 mt-9 flex w-fit items-center gap-2"
+            style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 13, letterSpacing: '0.14em', textTransform: 'uppercase', color: panelTextColor }}
+          >
+            View Project
+            <span className="transition-transform duration-300 group-hover:translate-x-1.5" style={{ color: proj.accent }}>
+              →
             </span>
-          ))}
+            <span
+              className="absolute -bottom-2 left-0 h-px w-full origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100"
+              style={{ background: proj.accent }}
+            />
+          </button>
         </div>
-
-        {/* ── Vignette edges ── */}
-        <div
-          className='pointer-events-none absolute inset-0'
-          style={{
-            zIndex: 25,
-            background: 'radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.65) 100%)',
-          }}
-        />
-
-        <button
-          type='button'
-          onClick={handleProjectClick}
-          className='absolute bottom-[5vh] right-[5vw] rounded-full border px-6 py-3 text-[11px] tracking-[0.16em] uppercase transition-all duration-300 hover:scale-[1.03]'
-          style={{
-            zIndex: 40,
-            fontFamily: 'DM Sans, sans-serif',
-            color: primaryTextColor,
-            borderColor: isFourthProject ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)',
-            background: isFourthProject ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
-            backdropFilter: 'blur(4px)',
-          }}
-        >
-          Visit
-        </button>
-
       </div>
+
+      <style>{`
+        @keyframes kenburns {
+          0%   { transform: scale(1) translate(0, 0); }
+          100% { transform: scale(1.08) translate(-1%, 1%); }
+        }
+      `}</style>
     </section>
   )
 }

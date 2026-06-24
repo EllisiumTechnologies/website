@@ -94,11 +94,11 @@ const AboutLanding = () => {
   }, [])
 
   return (
-    <section ref={sectionRef} className='relative h-screen overflow-hidden bg-[#ffffff] pt-16'>
+    <section ref={sectionRef} id="about" className='relative h-screen border-b-black border-[1px] overflow-hidden bg-[#ffffff] pt-16'>
       {PROJECTS.map((project, index) => (
         <article
           key={project.id}
-          className='project-panel absolute inset-0 grid h-screen w-full grid-cols-1 md:grid-cols-2'
+          className='project-panel border-t-black border-[1px]  absolute inset-0 grid h-screen w-full grid-cols-1 md:grid-cols-2'
           style={{ zIndex: index + 1 }}
         >
           <div className='relative h-[42vh] w-full md:h-full'>

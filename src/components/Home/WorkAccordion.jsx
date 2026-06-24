@@ -1,197 +1,354 @@
-import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useState, useRef } from 'react'
+import { motion, AnimatePresence, useInView } from 'framer-motion'
 
 const faqItems = [
   {
     id: 1,
-    question: "Do you guys actually sleep?",
-    answer: "Nah, we're powered by energy drinks and chaos. We do sleep sometimes though... when the code compiles on the first try."
+    question: "How fast can you actually ship?",
+    answer: "Faster than you'd expect. Most projects go from signed brief to live in 3–6 weeks depending on scope. We don't do 6-month agency timelines. We move with urgency because we know time is money — yours and ours."
   },
   {
     id: 2,
-    question: "Why should we pick you over other agencies?",
-    answer: "We're not gonna lie, we're pretty unhinged in the best way possible. We actually care about your project like it's our baby."
+    question: "What makes you different from every other studio?",
+    answer: "We treat every project like it's our own company launching. That means obsessing over conversion, not just aesthetics. We ask the uncomfortable questions — why does this exist, who actually cares, what's the one thing it must do. Most studios skip that part."
   },
   {
     id: 3,
-    question: "What's your vibe check?",
-    answer: "We're that friend who actually delivers on promises. No cap, we meet deadlines, communicate like humans, and make fire websites."
+    question: "Do you take on small projects?",
+    answer: "Depends on the project, not the budget. A sharp rebrand for a one-person business can be more exciting than a bloated enterprise site. Tell us what you're building and we'll tell you if we're the right fit — honestly."
   },
   {
     id: 4,
-    question: "Can you handle our chaotic ideas?",
-    answer: "TRY US. We've built weirder things at 3am. Bring on the wildest concepts, we'll make them work somehow."
+    question: "What does working with you actually look like?",
+    answer: "No Slack purgatory. No 47-slide decks to approve a button color. We work in short focused sprints, share progress early and often, and keep one point of contact on both sides. You'll always know where things stand."
   },
   {
     id: 5,
-    question: "What's the tea on pricing?",
-    answer: "We're flexible. Let's talk. No weird contracts, no hidden fees, just vibes and good work. And maybe pizza."
-  }
+    question: "What if we hate the first direction?",
+    answer: "Then we got our wires crossed early — and that's on us to catch in the brief stage. We don't lock you into one direction and pray. We explore, get your read fast, and pivot before we've burned hours on the wrong thing."
+  },
+  {
+    id: 6,
+    question: "Can you handle the full stack — design through development?",
+    answer: "Yes. Design, frontend, backend, CMS, integrations. We've shipped everything from marketing sites to SaaS dashboards to custom e-commerce. If it lives on a screen, we can build it."
+  },
 ]
 
-const TextReveal = ({ children, className, delay = 1 }) => {
-  return (
-    <div className={`relative w-fit ${className}`}>
-      <h1 className={`relative z-10 ${className}`}>
-        {children}
-      </h1>
-      <motion.div
-        initial={{ scaleX: 1 }}
-        whileInView={{ scaleX: 0 }}
-        transition={{ duration: .5, delay }}
-        className="h-full w-full absolute origin-right top-0 bg-[#B6BAA8] z-20"
-      />
-      <motion.div
-        initial={{ scaleX: 1 }}
-        whileInView={{ scaleX: 0 }}
-        transition={{ duration: 0.3, delay: delay + 0.1 }}
-        className="h-full w-full absolute origin-right top-0 bg-black z-20"
-      />
-      <motion.div
-        initial={{ scaleX: 1 }}
-        whileInView={{ scaleX: 0 }}
-        transition={{ duration: 0.1, delay: delay + 0.2 }}
-        className="h-full w-full absolute origin-right top-0 bg-[#B6BAA8] z-20"
-      />
-    </div>
-  )
-}
-
-const PlusIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-    <line x1="12" y1="5" x2="12" y2="19" />
-    <line x1="5" y1="12" x2="19" y2="12" />
+// ─── Icons ───────────────────────────────────────────────────────────────────
+const IconPlus = () => (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
+    <line x1="8" y1="2" x2="8" y2="14" />
+    <line x1="2" y1="8" x2="14" y2="8" />
   </svg>
 )
 
-const MinusIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-    <line x1="5" y1="12" x2="19" y2="12" />
+const IconMinus = () => (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
+    <line x1="2" y1="8" x2="14" y2="8" />
   </svg>
 )
 
-const ArrowIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <line x1="5" y1="12" x2="19" y2="12" />
-    <polyline points="12 5 19 12 12 19" />
+const IconArrow = () => (
+  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M1 7H13M13 7L7 1M13 7L7 13" />
   </svg>
 )
 
-const AccordionItem = ({ item, isOpen, onClick, index }) => {
-  return (
-    <motion.div
-      initial={{ opacity: 0, x: 20 }}
-      whileInView={{ opacity: 1, x: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.4, delay: index * 0.08 }}
-      className="border-b border-black/10"
+// ─── Accordion Item ───────────────────────────────────────────────────────────
+const AccordionItem = ({ item, isOpen, onClick, index }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 16 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{ duration: 0.5, delay: index * 0.07, ease: [0.16, 1, 0.3, 1] }}
+    style={{
+      borderBottom: '1px solid #1a1a1a0e',
+    }}
+  >
+    <button
+      onClick={onClick}
+      style={{
+        width: '100%', padding: '24px 0',
+        display: 'flex', alignItems: 'center',
+        justifyContent: 'space-between', gap: 24,
+        background: 'none', border: 'none',
+        cursor: 'pointer', textAlign: 'left',
+        fontFamily: 'inherit',
+      }}
     >
-      <button
-        onClick={onClick}
-        className="w-full py-4 flex items-center justify-between gap-4 group"
-      >
-        <span className="text-left text-base md:text-lg font-medium text-black group-hover:text-black/70 transition-colors duration-300">
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+        <span style={{
+          fontSize: '0.6rem', fontWeight: 700,
+          letterSpacing: '0.15em', color: '#1a1a1a28',
+          fontVariantNumeric: 'tabular-nums',
+          minWidth: 20, flexShrink: 0,
+        }}>
+          {String(index + 1).padStart(2, '0')}
+        </span>
+        <span style={{
+          fontSize: '1rem', fontWeight: 500,
+          color: isOpen ? '#1a1a1a' : '#1a1a1a',
+          lineHeight: 1.4, letterSpacing: '-0.01em',
+          transition: 'color 0.2s',
+        }}>
           {item.question}
         </span>
-        <motion.span
-          animate={{ rotate: isOpen ? 180 : 0, scale: isOpen ? 1.1 : 1 }}
-          transition={{ duration: 0.3, type: "spring", stiffness: 300 }}
-          className={`flex-shrink-0 p-2 rounded-full transition-all duration-300 ${isOpen ? 'bg-black text-white' : 'bg-black/5 text-black group-hover:bg-black group-hover:text-white'}`}
+      </div>
+
+      <motion.div
+        animate={{ rotate: isOpen ? 45 : 0 }}
+        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+        style={{
+          width: 32, height: 32, borderRadius: '50%', flexShrink: 0,
+          border: isOpen ? '1px solid #1a1a1a' : '1px solid #1a1a1a18',
+          background: isOpen ? '#1a1a1a' : 'transparent',
+          color: isOpen ? '#fff' : '#1a1a1a70',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          transition: 'background 0.25s, border-color 0.25s, color 0.25s',
+        }}
+      >
+        <IconPlus />
+      </motion.div>
+    </button>
+
+    <AnimatePresence initial={false}>
+      {isOpen && (
+        <motion.div
+          key="answer"
+          initial={{ height: 0, opacity: 0 }}
+          animate={{ height: 'auto', opacity: 1 }}
+          exit={{ height: 0, opacity: 0 }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          style={{ overflow: 'hidden' }}
         >
-          {isOpen ? <MinusIcon /> : <PlusIcon />}
-        </motion.span>
-      </button>
-
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
-            className="overflow-hidden"
+          <motion.p
+            initial={{ y: 10, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 6, opacity: 0 }}
+            transition={{ duration: 0.3, delay: 0.06 }}
+            style={{
+              margin: 0, paddingBottom: 28, paddingLeft: 36,
+              fontSize: '0.92rem', fontWeight: 300,
+              lineHeight: 1.8, color: '#1a1a1a65',
+              maxWidth: 560,
+            }}
           >
-            <div className="pb-4 pr-10">
-              <motion.p
-                initial={{ y: 8, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.1 }}
-                className="text-black/60 text-sm leading-relaxed"
-              >
-                {item.answer}
-              </motion.p>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.div>
-  )
-}
+            {item.answer}
+          </motion.p>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  </motion.div>
+)
 
+// ─── Main Section ─────────────────────────────────────────────────────────────
 const WorkAccordion = () => {
   const [openIndex, setOpenIndex] = useState(0)
+  const ref = useRef(null)
+  const isInView = useInView(ref, { once: true, margin: '-80px' })
 
-  const handleToggle = (index) => {
-    setOpenIndex(openIndex === index ? -1 : index)
-  }
+  const toggle = (i) => setOpenIndex(openIndex === i ? -1 : i)
 
   return (
-    <section className="py-28 px-6 md:px-16 ">
-      <div className="max-w-8xl mx-auto">
-        <div className="grid md:grid-cols-2 gap-16">
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="md:sticky md:top-24 self-start"
-          >
-            <p className="text-xs font-bold text-black/40 uppercase tracking-[0.3em] mb-3">
-              Still Curious?
-            </p>
-            
-            <div className="overflow-hidden">
-              <TextReveal className="text-5xl md:text-6xl font-bold font-serif text-black leading-[1.1]" delay={0.3}>
-                Common
-              </TextReveal>
-            </div>
-            
-            <div className="overflow-hidden">
-              <TextReveal className="text-5xl md:text-6xl font-serif font-bold text-black leading-[1.1]" delay={0.5}>
-                Questions
-              </TextReveal>
-            </div>
-            
-            <p className="mt-6 text-black/50 text-lg max-w-sm">
-              We've got answers. Well, most of them.
-            </p>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="mt-8 px-8 py-4 bg-black text-white font-bold rounded-full text-sm tracking-wide flex items-center gap-2"
-            >
-              Let's Talk
-              <ArrowIcon />
-            </motion.button>
-          </motion.div>
+    <section
+      ref={ref}
+      style={{
+        background: '#ffffff',
+        padding: '120px 0',
+        fontFamily: "'Inter', sans-serif",
+        position: 'relative',
+        overflow: 'hidden',
+      }}
+    >
+      {/* Background number watermark */}
+      <div style={{
+        position: 'absolute', right: -20, top: '50%',
+        transform: 'translateY(-50%)',
+        fontFamily: "'Georgia', serif",
+        fontSize: 'clamp(180px, 22vw, 320px)',
+        fontWeight: 700, lineHeight: 1,
+        color: '#1a1a1a03',
+        userSelect: 'none', pointerEvents: 'none',
+        letterSpacing: '-0.05em',
+      }}>
+        FAQ
+      </div>
 
+      <div style={{ maxWidth: 1500, margin: '0 auto', padding: '0 48px', position: 'relative', zIndex: 1 }}>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1.45fr)',
+          gap: '80px',
+          alignItems: 'start',
+        }}>
+
+          {/* ── Left ── */}
+          <div style={{ position: 'sticky', top: 96 }}>
+            <motion.p
+              initial={{ opacity: 0, y: 12 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6 }}
+              style={{
+                margin: '0 0 16px',
+                fontSize: '0.6rem', fontWeight: 700,
+                letterSpacing: '0.28em', textTransform: 'uppercase',
+                color: '#1a1a1a45',
+              }}
+            >
+              Still curious?
+            </motion.p>
+
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.75, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+              style={{
+                margin: '0 0 20px',
+                fontFamily: "'Georgia', serif",
+                fontSize: 'clamp(2.6rem, 4vw, 3.8rem)',
+                fontWeight: 400, lineHeight: 1.05,
+                letterSpacing: '-0.025em', color: '#1a1a1a',
+              }}
+            >
+              Common<br />
+              <span style={{ position: 'relative', display: 'inline-block' }}>
+                questions.
+                <motion.span
+                  initial={{ scaleX: 0 }}
+                  animate={isInView ? { scaleX: 1 } : {}}
+                  transition={{ duration: 0.9, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                  style={{
+                    position: 'absolute', bottom: 4, left: 0, right: 0,
+                    height: 3, background: '#1a1a1a', transformOrigin: 'left',
+                  }}
+                />
+              </span>
+            </motion.h2>
+
+            <motion.p
+              initial={{ opacity: 0, y: 16 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.7, delay: 0.2 }}
+              style={{
+                margin: '0 0 40px',
+                fontSize: '0.95rem', fontWeight: 300,
+                lineHeight: 1.75, color: '#1a1a1a60',
+                maxWidth: 300,
+              }}
+            >
+              We've answered the ones you're probably too polite to ask.
+            </motion.p>
+
+            {/* CTA */}
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.7, delay: 0.3 }}
+              style={{ display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'flex-start' }}
+            >
+              <motion.a
+                href="#contact"
+                style={{
+                  position: 'relative', overflow: 'hidden',
+                  display: 'inline-flex', alignItems: 'center', gap: 12,
+                  background: '#1a1a1a', color: '#fff',
+                  padding: '14px 24px', borderRadius: 8,
+                  textDecoration: 'none',
+                  fontSize: '0.68rem', fontWeight: 700,
+                  letterSpacing: '0.18em', textTransform: 'uppercase',
+                  fontFamily: 'inherit',
+                }}
+                whileHover="hover"
+                whileTap={{ scale: 0.97 }}
+              >
+                <motion.div
+                  variants={{ hover: { x: 0 }, initial: { x: '-101%' } }}
+                  initial="initial"
+                  transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                  style={{ position: 'absolute', inset: 0, background: '#2d2d2d', zIndex: 0 }}
+                />
+                <span style={{ position: 'relative', zIndex: 1 }}>Still have questions?</span>
+                <motion.span
+                  variants={{ hover: { x: 4 }, initial: { x: 0 } }}
+                  transition={{ duration: 0.3 }}
+                  style={{ position: 'relative', zIndex: 1, display: 'flex' }}
+                >
+                  <IconArrow />
+                </motion.span>
+              </motion.a>
+
+              <span style={{ fontSize: '0.72rem', color: '#1a1a1a40', paddingLeft: 2 }}>
+                We reply within 24h.
+              </span>
+            </motion.div>
+
+            {/* Decorative count */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={isInView ? { opacity: 1 } : {}}
+              transition={{ duration: 0.6, delay: 0.5 }}
+              style={{
+                marginTop: 60,
+                display: 'flex', alignItems: 'center', gap: 10,
+              }}
+            >
+              <span style={{
+                fontSize: '2.5rem', fontWeight: 700,
+                fontFamily: "'Georgia', serif",
+                color: '#1a1a1a', letterSpacing: '-0.04em',
+                lineHeight: 1,
+              }}>
+                {String(faqItems.length).padStart(2, '0')}
+              </span>
+              <span style={{
+                fontSize: '0.68rem', fontWeight: 500,
+                color: '#1a1a1a40', letterSpacing: '0.1em',
+                textTransform: 'uppercase', lineHeight: 1.4,
+              }}>
+                questions<br />answered
+              </span>
+            </motion.div>
+          </div>
+
+          {/* ── Right / Accordion ── */}
           <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="space-y-1"
+            initial={{ opacity: 0, x: 24 }}
+            animate={isInView ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: 0.7, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
           >
-            {faqItems.map((item, index) => (
+            {/* Header rule */}
+            <div style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              marginBottom: 8, paddingBottom: 16,
+              borderBottom: '1px solid #1a1a1a0e',
+            }}>
+              <span style={{
+                fontSize: '0.58rem', fontWeight: 700,
+                letterSpacing: '0.24em', textTransform: 'uppercase',
+                color: '#1a1a1a30',
+              }}>
+                Question
+              </span>
+              <span style={{
+                fontSize: '0.58rem', fontWeight: 700,
+                letterSpacing: '0.24em', textTransform: 'uppercase',
+                color: '#1a1a1a30',
+              }}>
+                {openIndex >= 0 ? `${String(openIndex + 1).padStart(2, '0')} / ${String(faqItems.length).padStart(2, '0')}` : '—'}
+              </span>
+            </div>
+
+            {faqItems.map((item, i) => (
               <AccordionItem
                 key={item.id}
                 item={item}
-                index={index}
-                isOpen={openIndex === index}
-                onClick={() => handleToggle(index)}
+                index={i}
+                isOpen={openIndex === i}
+                onClick={() => toggle(i)}
               />
             ))}
           </motion.div>
+
         </div>
       </div>
     </section>

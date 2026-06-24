@@ -1,49 +1,34 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { Route, Routes, useLocation } from 'react-router-dom'
-import Home from './pages/Home'
-import About from './pages/About'
+import LandingPage from './components/Home/LandingPage'
+import ProjectShowcase from './components/Work/ProjectDisplay'
+import AboutLanding from './components/About/AboutLanding'
+import WorkAccordion from './components/Home/WorkAccordion'
 import Contact from './pages/Contact'
 import ElasticCursor from './components/Common/ElasticCursor'
 import useLenisSmoothScroll from './hooks/useLenisSmoothScroll'
 import LoadingAnimation from './components/Common/LoadingAnimation'
 import Navbar from './components/Common/Navbar'
-import GrainOverlay from './components/Common/GrainOverlay'
 import Footer from './components/Common/Footer'
-import Work from './pages/Work'
+import GrainOverlay from './components/Common/GrainOverlay'
 
 const App = () => {
-  const location = useLocation()
-  const [displayLocation, setDisplayLocation] = useState(location)
   const [hasBooted, setHasBooted] = useState(false)
-  const isRouteChanging = location.pathname !== displayLocation.pathname
-  const isLoading = !hasBooted || isRouteChanging
+  const isReady = hasBooted
 
-  useLenisSmoothScroll(!isLoading)
+  useLenisSmoothScroll(true)
 
   useEffect(() => {
-    const previousOverflow = document.body.style.overflow
-    const previousTouchAction = document.body.style.touchAction
-
-    if (isLoading) {
+    if (!hasBooted) {
       document.body.style.overflow = 'hidden'
       document.body.style.touchAction = 'none'
     } else {
-      document.body.style.overflow = previousOverflow
-      document.body.style.touchAction = previousTouchAction
+      document.body.style.overflow = ''
+      document.body.style.touchAction = ''
     }
-
-    return () => {
-      document.body.style.overflow = previousOverflow
-      document.body.style.touchAction = previousTouchAction
-    }
-  }, [isLoading])
+  }, [hasBooted])
 
   const handleLoadingComplete = useCallback(() => {
-    if (!hasBooted) {
-      setHasBooted(true)
-    }
-
-    setDisplayLocation(location)
+    setHasBooted(true)
 
     if (window.__lenis) {
       window.__lenis.scrollTo(0, { immediate: true })
@@ -51,21 +36,19 @@ const App = () => {
     }
 
     window.scrollTo({ top: 0, behavior: 'auto' })
-  }, [hasBooted, location])
+  }, [])
 
   return (
     <div>
-      {isLoading && <LoadingAnimation onComplete={handleLoadingComplete} />}
-      {!isLoading && <ElasticCursor />}
+      {!hasBooted && <LoadingAnimation onComplete={handleLoadingComplete} />}
+      {hasBooted && <ElasticCursor />}
       <Navbar />
-      {/* <GrainOverlay /> */}
-
-      <Routes location={displayLocation}>
-        <Route path='/' element={<Home isReady={!isLoading} />} />
-        <Route path='/about' element={<About />} />
-        <Route path='/work' element={<Work />} />
-        <Route path='/contact' element={<Contact />} />
-      </Routes>
+      <GrainOverlay/>
+      <LandingPage isReady={isReady} />
+      <ProjectShowcase />
+      <WorkAccordion />
+      <AboutLanding />
+      <Contact />
       <Footer />
     </div>
   )

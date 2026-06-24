@@ -1,12 +1,21 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { NavLink } from 'react-router-dom'
 import { motion } from 'framer-motion'
 
 const NAV_ITEMS = [
-  { meta: 'Projects (08)', label: 'Work', to: '/work' },
-  { meta: 'Who we are', label: 'About', to: '/about' },
-  { meta: 'Get in touch', label: 'Contact', to: '/contact' },
+  { meta: 'Projects (08)', label: 'Work', sectionId: 'work' },
+  { meta: 'Who we are', label: 'About', sectionId: 'about' },
+  { meta: 'Get in touch', label: 'Contact', sectionId: 'contact' },
 ]
+
+const scrollToSection = (sectionId) => {
+  const el = document.getElementById(sectionId)
+  if (!el) return
+  if (window.__lenis) {
+    window.__lenis.scrollTo(el)
+  } else {
+    el.scrollIntoView({ behavior: 'smooth' })
+  }
+}
 
 const Navbar = () => {
   const [scrollProgress, setScrollProgress] = useState(0)
@@ -56,13 +65,13 @@ const Navbar = () => {
       <div className='mx-auto max-w-480'>
         <div className='hidden h-17 grid-cols-[.20fr_2fr_1.3fr] md:grid'>
           <div className='flex items-center border-r border-black/30 px-10'>
-            <NavLink
-              to='/'
+            <button
+              onClick={() => scrollToSection('home')}
               className=' inline-flex items-center gap-3'
               aria-label='Go to home page'
             >
               <span className='font-["Germania_One"] text-3xl font-medium leading-none'>ET</span>
-            </NavLink>
+            </button>
           </div>
 
           <div className=' flex items-center border-r border-black/50 px-8'>
@@ -87,13 +96,9 @@ const Navbar = () => {
                 }}
                 transition={{ duration: 0.2 }}
               >
-                <NavLink
-                  to={item.to}
-                  className={({ isActive }) =>
-                    ` flex flex-col justify-center  gap-0.5 ${
-                      isActive ? '' : ''
-                    }`
-                  }
+                <button
+                  onClick={() => scrollToSection(item.sectionId)}
+                  className='flex flex-col justify-center gap-0.5 text-left w-full'
                 >
                   <span className='text-[11px] tracking-tight'>{item.meta}</span>
                   <span className='flex items-center justify-between text-2xl leading-none tracking-[-0.015em]'>
@@ -138,26 +143,26 @@ const Navbar = () => {
                       </motion.span>
                     </motion.span>
                   </span>
-                </NavLink>
+                </button>
               </motion.div>
             ))}
-          </nav>
-        </div>
+            </nav>
+          </div>
 
-        <div className='flex h-16 items-center justify-between px-5 md:hidden'>
-          <NavLink
-            to='/'
+          <div className='flex h-16 items-center justify-between px-5 md:hidden'>
+          <button
+            onClick={() => scrollToSection('home')}
             aria-label='Go to home page'
             className=' font-["Germania_One"] text-3xl leading-none'
           >
             ET
-          </NavLink>
+          </button>
 
           <nav className=' flex items-center gap-4 text-xs font-medium' aria-label='Mobile navigation'>
             {NAV_ITEMS.map((item) => (
-              <NavLink key={item.label} to={item.to} className={({ isActive }) => (isActive ? 'opacity-100' : 'opacity-85')}>
+              <button key={item.label} onClick={() => scrollToSection(item.sectionId)} className='opacity-85 hover:opacity-100 transition-opacity'>
                 {item.label}
-              </NavLink>
+              </button>
             ))}
           </nav>
         </div>

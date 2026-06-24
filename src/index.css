@@ -8,6 +8,10 @@
   font-display: swap;
 }
 
+* {
+  cursor: none;
+}
+
 html,
 body {
   -ms-overflow-style: none;
@@ -40,7 +44,7 @@ p {
   }
 }
 .grain-marquee {
-  animation: grainMarquee 5s linear infinite;
+  animation: grainMarquee 0s linear infinite;
   will-change: background-position;
 }
 
