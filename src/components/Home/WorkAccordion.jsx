@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence, useInView } from 'framer-motion'
 
 const faqItems = [
@@ -146,6 +146,13 @@ const WorkAccordion = () => {
   const [openIndex, setOpenIndex] = useState(0)
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: '-80px' })
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768)
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   const toggle = (i) => setOpenIndex(openIndex === i ? -1 : i)
 
@@ -154,7 +161,7 @@ const WorkAccordion = () => {
       ref={ref}
       style={{
         background: '#ffffff',
-        padding: '120px 0',
+        padding: isMobile ? '80px 0' : '120px 0',
         fontFamily: "'Inter', sans-serif",
         position: 'relative',
         overflow: 'hidden',
@@ -174,16 +181,16 @@ const WorkAccordion = () => {
         FAQ
       </div>
 
-      <div style={{ maxWidth: 1500, margin: '0 auto', padding: '0 48px', position: 'relative', zIndex: 1 }}>
+      <div style={{ maxWidth: 1500, margin: '0 auto', padding: isMobile ? '0 20px' : '0 48px', position: 'relative', zIndex: 1 }}>
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1.45fr)',
-          gap: '80px',
+          gridTemplateColumns: isMobile ? '1fr' : 'minmax(0, 1fr) minmax(0, 1.45fr)',
+          gap: isMobile ? '40px' : '80px',
           alignItems: 'start',
         }}>
 
           {/* ── Left ── */}
-          <div style={{ position: 'sticky', top: 96 }}>
+          <div style={{ position: isMobile ? 'static' : 'sticky', top: 96 }}>
             <motion.p
               initial={{ opacity: 0, y: 12 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}

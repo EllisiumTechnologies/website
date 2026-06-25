@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
 
 // ─── Data ────────────────────────────────────────────────────────────────────
@@ -129,16 +129,16 @@ const containerVariants = {
   visible: { transition: { staggerChildren: 0.07 } },
 }
 
-const MainGrid = ({ isInView }) => (
+const MainGrid = ({ isInView, isMobile }) => (
   <motion.div
     variants={containerVariants}
     initial="hidden"
     animate={isInView ? 'visible' : 'hidden'}
     style={{
-      padding: '60px 56px 52px',
+      padding: isMobile ? '40px 20px 36px' : '60px 56px 52px',
       display: 'grid',
-      gridTemplateColumns: '2.2fr 1fr 1fr 1.1fr',
-      gap: '48px',
+      gridTemplateColumns: isMobile ? '1fr' : '2.2fr 1fr 1fr 1.1fr',
+      gap: isMobile ? '32px' : '48px',
       alignItems: 'start',
     }}
   >
@@ -258,13 +258,13 @@ const MainGrid = ({ isInView }) => (
 )
 
 // ─── Bottom Bar ──────────────────────────────────────────────────────────────
-const BottomBar = ({ isInView }) => (
+const BottomBar = ({ isInView, isMobile }) => (
   <motion.div
     initial={{ opacity: 0 }}
     animate={isInView ? { opacity: 1 } : {}}
     transition={{ duration: 0.6, delay: 0.4 }}
     style={{
-      padding: '18px 56px',
+      padding: isMobile ? '16px 20px' : '18px 56px',
       display: 'flex', alignItems: 'center',
       justifyContent: 'space-between', gap: 16, flexWrap: 'wrap',
     }}
@@ -309,6 +309,13 @@ const BottomBar = ({ isInView }) => (
 const Footer = () => {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: '-60px' })
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768)
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   return (
     <footer
@@ -321,9 +328,9 @@ const Footer = () => {
         overflow: 'hidden',
       }}
     >
-      <MainGrid  isInView={isInView} />
+      <MainGrid  isInView={isInView} isMobile={isMobile} />
       <Divider />
-      <BottomBar isInView={isInView} />
+      <BottomBar isInView={isInView} isMobile={isMobile} />
     </footer>
   )
 }

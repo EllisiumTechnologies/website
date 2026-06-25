@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence, useInView } from 'framer-motion'
 import emailjs from '@emailjs/browser'
 
@@ -97,8 +97,15 @@ const ContactSection = () => {
   const [formData, setFormData] = useState({ name: '', email: '', message: '', service: '' })
   const [submitted, setSubmitted] = useState(false)
   const [focused, setFocused] = useState(null)
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
   const sectionRef = useRef(null)
   const isInView = useInView(sectionRef, { once: true, margin: '-80px' })
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768)
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -139,7 +146,7 @@ const ContactSection = () => {
         minHeight: '100vh',
         display: 'flex',
         alignItems: 'center',
-        padding: '100px 20px 80px',
+        padding: isMobile ? '80px 16px 60px' : '100px 20px 80px',
         position: 'relative',
         overflow: 'hidden',
         fontFamily: "'Inter', sans-serif"
@@ -153,6 +160,7 @@ const ContactSection = () => {
       <FloatingDot x="50%" y="10%" delay={1.8} size={4} />
 
       {/* Rotating rings */}
+      {!isMobile && (
       <motion.div
         style={{
           position: 'absolute', top: -180, right: -180,
@@ -162,6 +170,8 @@ const ContactSection = () => {
         animate={{ rotate: 360 }}
         transition={{ duration: 80, repeat: Infinity, ease: 'linear' }}
       />
+      )}
+      {!isMobile && (
       <motion.div
         style={{
           position: 'absolute', top: -80, right: -80,
@@ -171,6 +181,7 @@ const ContactSection = () => {
         animate={{ rotate: -360 }}
         transition={{ duration: 50, repeat: Infinity, ease: 'linear' }}
       />
+      )}
 
       <motion.div
         variants={containerVariants}
@@ -179,8 +190,8 @@ const ContactSection = () => {
         style={{
           margin: '0 auto', width: '100%', maxWidth: 1400,
           display: 'grid',
-          gridTemplateColumns: 'minmax(0,1fr) minmax(0,1.3fr)',
-          gap: '80px',
+          gridTemplateColumns: isMobile ? '1fr' : 'minmax(0,1fr) minmax(0,1.3fr)',
+          gap: isMobile ? '48px' : '80px',
           position: 'relative', zIndex: 1
         }}
       >
@@ -341,7 +352,7 @@ const ContactSection = () => {
                 exit={{ opacity: 0 }}
               >
                 {/* Name & Email */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 24 }}>
                   {[
                     { key: 'name',  label: 'Name',  type: 'text',  placeholder: 'John Doe' },
                     { key: 'email', label: 'Email', type: 'email', placeholder: 'john@example.com' }
@@ -389,7 +400,7 @@ const ContactSection = () => {
                   }}>
                     What's the move?
                   </label>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: 12 }}>
                     {SERVICES.map(({ id, label, Icon, desc, tag }) => {
                       const isSelected = formData.service === label
                       return (
