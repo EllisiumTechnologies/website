@@ -356,9 +356,9 @@ const LandingPage = ({ isReady }) => {
                 className="mt-4 max-w-5xl font-serif text-[2.75rem] font-normal leading-[1.15] tracking-[-0.02em] md:text-[3.9rem]"
               >
                 {[
-                  "Redefine the digital landscape by",
-                  " crafting elegant, human-centered experiences that seamlessly blend",
-                  "beauty and functionality",
+                  "Redefining digital",
+                  "experiences with precision",
+                  "and purpose",
                 ].map((line, i) => (
                   <motion.span
                     key={i}
@@ -390,7 +390,7 @@ const LandingPage = ({ isReady }) => {
                   variants={panelItemVariants}
                   className="flex flex-wrap mt-10 justify-between gap-8"
                 >
-                  {["Experience the Work", "Inquire"].map((label, i) => (
+                  {["Experience the Work"].map((label) => (
                     <motion.a
                       key={label}
                       href="#"
@@ -400,7 +400,7 @@ const LandingPage = ({ isReady }) => {
                       transition={{
                         duration: 0.6,
                         ease: [0.16, 1, 0.3, 1],
-                        delay: 0.85 + i * 0.1,
+                        delay: 0.85,
                       }}
                       whileHover={{ x: 4 }}
                     >
