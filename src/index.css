@@ -8,22 +8,6 @@
   font-display: swap;
 }
 
-@font-face {
-  font-family: "Passion";
-  src: url("/PassionsConflict-Regular.ttf") format("truetype");
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Passion One";
-  src: url("/PassionsConflict-Regular.ttf") format("truetype");
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-}
-
 * {
   cursor: none;
 }
