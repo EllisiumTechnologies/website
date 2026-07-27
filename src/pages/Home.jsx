@@ -1,24 +1,17 @@
 import React from 'react'
 import LandingPage from '../components/Home/LandingPage'
-import ProjectDisplay from '../components/Home/ProjectDisplay'
-import ScrambleText from '../components/Common/ScrambleText'
-import ContactSection from '../components/Common/ContactSection'
-
+import FontAnimation from '../components/Home/FontAnimation'
+import WorkAccordion from '../components/Home/WorkAccordion'
+import AboutLanding from '../components/About/AboutLanding'
 
 const Home = ({ isReady }) => {
   return (
-    <div className='min-h-screen bg-[#D5C8B0] text-[#1a1a1a]'>
+    <div className='min-h-screen bg-[#ffffff] '>
       <main>
         <LandingPage isReady={isReady} />
-        
-        <div className='flex flex-col items-center justify-center py-32 bg-[#E5DCCB]'>
-          <p className='text-sm uppercase tracking-widest mb-4 opacity-50 text-[#1a1a1a]'>Interactive Element</p>
-          <ScrambleText text="ANIMATION + INTERACTION" className="text-4xl md:text-6xl text-[#1a1a1a]" />
-        </div>
-
-        <ProjectDisplay />
-        
-        <ContactSection />
+        {/* <FontAnimation /> */}
+        <AboutLanding />
+        <WorkAccordion />
       </main>
     </div>
   )

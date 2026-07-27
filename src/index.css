@@ -8,6 +8,10 @@
   font-display: swap;
 }
 
+* {
+  cursor: none;
+}
+
 html,
 body {
   -ms-overflow-style: none;
@@ -31,5 +35,16 @@ p {
   -webkit-text-fill-color: #191919;
   -webkit-font-smoothing: antialiased;
 }
-
+@keyframes grainMarquee {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 200px 0;
+  }
+}
+.grain-marquee {
+  animation: grainMarquee 0s linear infinite;
+  will-change: background-position;
+}
 

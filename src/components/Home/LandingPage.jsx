@@ -16,7 +16,7 @@ const MotionDiv = motion.div;
 const MotionH1 = motion.h1;
 const MotionImg = motion.img;
 const MotionP = motion.p;
-const HOVER_TEXT_COLOR = "#1a1a1a";
+const HOVER_TEXT_COLOR = "#ffffff";
 const HEADING_LINES = ["Innovation-driven", "digital studio", "tech agency"];
 const SERVICES = [
   {
@@ -149,6 +149,8 @@ function ServicePanel({ item, index, isReady }) {
           {item.num}
         </motion.p>
 
+        {/* <div className="flex-1" /> */}
+
         <div className="mb-10 mt-6">
           {item.title.map((line, i) => (
             <div key={i} className="overflow-hidden">
@@ -244,14 +246,14 @@ const LandingPage = ({ isReady }) => {
     <section
       ref={sectionRef}
       id="home"
-      className="relative h-screen overflow-hidden"
+      className="relative h-screen border-b-1 border-b-black overflow-hidden"
     >
       <div
         ref={trackRef}
         className="relative flex h-full"
         style={{ width: `${PANEL_COUNT * 100}vw` }}
       >
-        <article className="relative h-screen w-screen shrink-0 bg-linear-to-br from-[#d8ccb4] to-[#cdbf9f] pl-10 ">
+        <article className="relative h-screen w-screen shrink-0 bg-[#ffffff]  pl-10 ">
           <div className="grid h-full grid-cols-1 gap-6 md:grid-cols-[1.2fr_0.9fr] md:gap-0">
             <MotionDiv
               className="grid h-full min-h-0 grid-rows-[auto_auto_auto] content-between gap-6 mt-20 md:pr-10"
@@ -318,7 +320,7 @@ const LandingPage = ({ isReady }) => {
           </div>
         </article>
 
-        <article className="relative h-screen w-screen shrink-0 overflow-hidden bg-[#C0B6A9] pl-8 pt-8  text-[#2f3138] md:pl-14 md:pt-17 ">
+        <article className="relative h-screen w-screen shrink-0 overflow-hidden bg-[#ffffff] pl-8 pt-8  text-[#2f3138] md:pl-14 md:pt-17 ">
           {/* Subtle animated grain texture overlay */}
           <MotionDiv
             initial={{ opacity: 0 }}
@@ -354,9 +356,9 @@ const LandingPage = ({ isReady }) => {
                 className="mt-4 max-w-5xl font-serif text-[2.75rem] font-normal leading-[1.15] tracking-[-0.02em] md:text-[3.9rem]"
               >
                 {[
-                  "Redefine the digital landscape by",
-                  " crafting elegant, human-centered experiences that seamlessly blend",
-                  "beauty and functionality",
+                  "Redefining digital",
+                  "experiences with precision",
+                  "and purpose",
                 ].map((line, i) => (
                   <motion.span
                     key={i}
@@ -380,7 +382,7 @@ const LandingPage = ({ isReady }) => {
                   variants={panelItemVariants}
                   className="max-w-xl text-[1.2rem] font-light leading-[1.7] text-[#1a1919]"
                 >
-                 Ellisium Technology's work is driven by innovation and precision, delivering high-performance digital experiences through modern development, user-focused design, and scalable solutions that reflect our commitment to excellence and impactful storytelling.
+                 Ellisium Technology’s work is driven by innovation and precision, delivering high-performance digital experiences through modern development, user-focused design, and scalable solutions that reflect our commitment to excellence and impactful storytelling.
                 </MotionP>
 
                 {/* CTA links */}
@@ -388,7 +390,7 @@ const LandingPage = ({ isReady }) => {
                   variants={panelItemVariants}
                   className="flex flex-wrap mt-10 justify-between gap-8"
                 >
-                  {["Experience the Work", "Inquire"].map((label, i) => (
+                  {["Experience the Work"].map((label) => (
                     <motion.a
                       key={label}
                       href="#"
@@ -398,7 +400,7 @@ const LandingPage = ({ isReady }) => {
                       transition={{
                         duration: 0.6,
                         ease: [0.16, 1, 0.3, 1],
-                        delay: 0.85 + i * 0.1,
+                        delay: 0.85,
                       }}
                       whileHover={{ x: 4 }}
                     >
@@ -502,7 +504,7 @@ const LandingPage = ({ isReady }) => {
                 ))}
               </h2>
 
-              
+             
 
               {/* Service description */}
               <motion.p
@@ -544,13 +546,13 @@ const LandingPage = ({ isReady }) => {
 
               </div>
 
-              
+             
               
             </MotionDiv>
           </div>
         </article>
 
-        <article className="flex h-screen w-screen shrink-0 bg-[#C0B6A9] text-[#222224]">
+        <article className="flex h-screen w-screen shrink-0 bg-[#ffffff] text-[#222224]">
           {SERVICES.map((item, i) => (
             <ServicePanel key={item.num} item={item} index={i} isReady={isReady} />
           ))}

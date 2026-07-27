@@ -20,7 +20,7 @@ const useLenisSmoothScroll = (enabled = true) => {
     }
 
     const lenis = new Lenis({
-      duration: 1.35,
+      duration: 1.55,
       easing: defaultEasing,
       smoothWheel: true,
       syncTouch: true,
