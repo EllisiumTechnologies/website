@@ -7,4 +7,7 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   // Fast Refresh can conflict with strict CSP policies that block eval/new Function.
   plugins: [react({ fastRefresh: false }), tailwindcss()],
+  server: {
+    allowedHosts: ['heat-bubble-depletion.ngrok-free.dev'],
+  }
 })
